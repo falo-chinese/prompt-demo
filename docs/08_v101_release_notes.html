@@ -1,0 +1,304 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FALO Prompt Manager v1.01 release notes for Falo x Force Cheng, including SEO, geo, hidden watermark, PWA, and teaching UI updates.">
+  <meta name="author" content="Falo x Force Cheng">
+  <meta name="version" content="v1.01">
+  <meta name="release-date" content="2026-06-01">
+  <meta name="geo.region" content="TW">
+  <meta name="geo.placename" content="Taiwan">
+  <meta name="geo.position" content="23.6978;120.9605">
+  <meta name="ICBM" content="23.6978, 120.9605">
+  <title>FALO Prompt Manager v1.01 Release Notes</title>
+  <style>
+    :root {
+      --bg: #fff7f3;
+      --paper: #fffdfb;
+      --ink: #243044;
+      --muted: #74677a;
+      --line: #f0d5ca;
+      --accent: #de7f8f;
+      --accent-strong: #ad5868;
+      --accent-soft: #ffe1e9;
+      --blue: #4f46e5;
+      --orange: #d97706;
+      --code: #fff1e8;
+      --radius: 8px;
+      --shadow: 0 18px 45px rgba(173, 88, 104, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.7;
+    }
+
+    .page {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 72px;
+    }
+
+    .hero,
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+    }
+
+    .hero {
+      padding: 34px;
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--accent-strong);
+      font-weight: 850;
+      font-size: 14px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(30px, 5vw, 46px);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      margin: 16px 0 0;
+      color: var(--muted);
+      font-size: 18px;
+      max-width: 840px;
+    }
+
+    .nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      margin-bottom: 18px;
+    }
+
+    .nav a {
+      color: var(--accent-strong);
+      background: var(--accent-soft);
+      text-decoration: none;
+      font-weight: 850;
+      font-size: 14px;
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    section {
+      padding: 26px;
+      margin: 18px 0;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 25px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 18px 0 8px;
+      font-size: 18px;
+      line-height: 1.3;
+      letter-spacing: 0;
+    }
+
+    p {
+      margin: 10px 0;
+    }
+
+    ul,
+    ol {
+      padding-left: 1.35rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 16px 0;
+      font-size: 15px;
+    }
+
+    th,
+    td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--code);
+    }
+
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: var(--accent-soft);
+      padding: 14px 16px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-weight: 800;
+      margin: 16px 0;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .mini {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fffaf8;
+      padding: 16px;
+    }
+
+    .mini h3 {
+      margin-top: 0;
+    }
+
+    code {
+      background: var(--code);
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      font-size: 0.92em;
+    }
+
+    pre {
+      overflow-x: auto;
+      background: #172033;
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 16px;
+      line-height: 1.55;
+    }
+
+    .tagline {
+      color: var(--muted);
+      text-align: center;
+      font-weight: 800;
+      margin-top: 28px;
+    }
+
+    @media (max-width: 800px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero,
+      section {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <header class="hero">
+      <p class="eyebrow">v1.01 · Falo x Force Cheng · 2026/6/1</p>
+      <h1>FALO Prompt Manager Release Notes</h1>
+      <p class="lead">這份人讀版整理 v1.01 的發布標記、SEO / geo、隱藏浮水印、PWA metadata、編修模式與教學展示調整。</p>
+    </header>
+
+    <nav class="nav" aria-label="章節">
+      <a href="#identity">版本</a>
+      <a href="#changes">修訂</a>
+      <a href="#teaching">教學 UI</a>
+      <a href="#checks">檢查</a>
+      <a href="#scope">邊界</a>
+    </nav>
+
+    <section id="identity">
+      <h2>1. 版本標記</h2>
+      <table>
+        <tr><th>欄位</th><th>內容</th></tr>
+        <tr><td>Version</td><td>v1.01</td></tr>
+        <tr><td>Brand</td><td>Falo x Force Cheng</td></tr>
+        <tr><td>Release Date</td><td>2026/6/1</td></tr>
+        <tr><td>Geo</td><td>Taiwan</td></tr>
+        <tr><td>Product Line</td><td>FALO Prompt</td></tr>
+        <tr><td>Delivery</td><td>Local-first PWA / single-file HTML main app</td></tr>
+      </table>
+      <div class="callout">FALO Prompt Manager v1.01 是一個可教學、可展示、可安裝的 Prompt Asset Management PWA。</div>
+    </section>
+
+    <section id="changes">
+      <h2>2. 本版修訂重點</h2>
+      <div class="grid">
+        <div class="mini">
+          <h3>程式層</h3>
+          <p><code>index.html</code> 新增 <code>APP_RELEASE</code>，manifest 與 service worker 更新為 v1.01。</p>
+        </div>
+        <div class="mini">
+          <h3>備註層</h3>
+          <p>主畫面與 PWA 狀態卡顯示版本備註，README 與 version map 同步。</p>
+        </div>
+        <div class="mini">
+          <h3>來源標記</h3>
+          <p>HTML 內含隱藏浮水印，留下版本、品牌、日期、Taiwan 與產品定位。</p>
+        </div>
+      </div>
+      <h3>SEO / Geo</h3>
+      <p><code>index.html</code> 已補上 description、author、keywords、version、release-date、geo.region、geo.placename、geo.position、ICBM、Open Graph 與 Twitter basic metadata。</p>
+      <pre><code>FALO Prompt Manager v1.01 | Falo x Force Cheng | 2026/6/1 | Taiwan | Prompt Asset Management PWA</code></pre>
+    </section>
+
+    <section id="teaching">
+      <h2>3. UI 與教學性調整</h2>
+      <h3>編修模式</h3>
+      <p>閱讀模式維持乾淨。使用者點「編輯」後，文字框下方會顯示即時預覽，讓新手看見模板文字與變數代入後實際文字的差異。</p>
+      <h3>Voice / OCR</h3>
+      <p>Voice 使用藍紫色系，OCR 使用暖橘色系。兩者都是資料入口，但視覺上明確區分任務性質。</p>
+      <h3>Warm 主題</h3>
+      <p>第三種主題由 Teaching 改為 Warm，採暖色馬卡龍風格，適合課堂展示與初學者使用。</p>
+    </section>
+
+    <section id="checks">
+      <h2>4. 發布檢查</h2>
+      <ol>
+        <li><code>index.html</code> script syntax 可解析。</li>
+        <li>PWA 檢查通過。</li>
+        <li>JSON 檔案可解析。</li>
+        <li>編修模式即時預覽可運作。</li>
+        <li>Voice / OCR 右側工具卡配色正確。</li>
+        <li>README / docs / local README 版本資訊一致。</li>
+        <li>zip 備份已放入 <code>backup/</code>。</li>
+        <li>GitHub repo 已推送到 <code>falo-taiwan/prompt-demo</code>。</li>
+      </ol>
+    </section>
+
+    <section id="scope">
+      <h2>5. 本版不做</h2>
+      <ul>
+        <li>不做完整後端。</li>
+        <li>不做授權系統。</li>
+        <li>不做 Runtime marketplace。</li>
+        <li>不把 OCR API 直接塞回 Prompt Manager。</li>
+        <li>不把 Capability Pack 變成 v1.01 主功能。</li>
+      </ul>
+      <div class="callout">先把 Prompt 做成產品；Runtime 留在藍圖。</div>
+    </section>
+
+    <p class="tagline">FALO Prompt Manager v1.01 · Falo x Force Cheng · Taiwan</p>
+  </main>
+</body>
+</html>

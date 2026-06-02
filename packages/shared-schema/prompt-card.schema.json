@@ -1,0 +1,89 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://falo.local/schemas/prompt-card.schema.json",
+  "title": "FALO Prompt Manager Database",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "required": ["id", "title", "items"],
+    "additionalProperties": false,
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+      },
+      "title": {
+        "type": "string",
+        "minLength": 1
+      },
+      "description": {
+        "type": "string"
+      },
+      "items": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "title", "promptText"],
+          "additionalProperties": false,
+          "properties": {
+            "id": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"
+            },
+            "title": {
+              "type": "string",
+              "minLength": 1
+            },
+            "description": {
+              "type": "string"
+            },
+            "promptText": {
+              "type": "string",
+              "minLength": 1
+            },
+            "tags": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "status": {
+              "type": "string",
+              "enum": ["stable", "draft", "review", "deprecated"]
+            },
+            "variables": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "expectedOutput": {
+              "type": "string"
+            },
+            "humanReviewPoints": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "targetAI": {
+              "type": "string"
+            },
+            "role": {
+              "type": "string"
+            },
+            "course": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "source": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+}

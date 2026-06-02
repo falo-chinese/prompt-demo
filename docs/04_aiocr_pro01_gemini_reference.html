@@ -1,0 +1,247 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI_Teach_Classroom / aiocr-pro01 Gemini OCR 參考整理</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --paper: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+      --line: #dbe3ee;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --code: #0f172a;
+      --radius: 8px;
+      --shadow: 0 16px 42px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.7;
+    }
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 72px;
+    }
+    header, section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin: 16px 0;
+    }
+    h1 { margin: 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 0 0 12px; font-size: 24px; letter-spacing: 0; }
+    h3 { margin: 18px 0 8px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 10px 0; }
+    .lead { color: var(--muted); font-size: 18px; max-width: 820px; }
+    .eyebrow { color: var(--accent); font-weight: 850; margin: 0 0 8px; }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #f0fdfa;
+      padding: 12px 14px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-weight: 750;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 15px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f8fafc; }
+    code {
+      background: #eef2f7;
+      padding: 2px 5px;
+      border-radius: 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    pre {
+      overflow-x: auto;
+      background: var(--code);
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 16px;
+      line-height: 1.55;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    a { color: var(--accent); font-weight: 800; }
+    @media (max-width: 760px) {
+      header, section { padding: 22px; }
+      table { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">FALO Prompt Manager Reference</p>
+      <h1>AI_Teach_Classroom / aiocr-pro01 Gemini OCR 參考整理</h1>
+      <p class="lead">把 <a href="https://github.com/falo-taiwan/aiocr-pro01">falo-taiwan/aiocr-pro01</a> 與本機 <code>AI_Teach_Classroom</code> 的 Gemini OCR 模型路由、影像處理策略與資料邊界，整理成 Prompt Manager v0.3 的參考設計。</p>
+    </header>
+
+    <section>
+      <h2>1. Pro01 的核心定位</h2>
+      <p><code>aiocr-pro01</code> 不是單純發票 OCR 頁面，而是一個 local-first 的文件 AI ETL / HITL workbench。</p>
+      <pre><code>image / document / form
+-> template field schema
+-> prompt schema
+-> AI1 / AI2 proposal
+-> human reconciliation
+-> confirmed result
+-> evidence package export</code></pre>
+      <div class="callout">對 Prompt Manager 的啟發：OCR 後要進入 Prompt、Schema、人工檢查、JSON 匯出；v0.3 只需要保留資料入口與題庫，不先做完整 reconciliation table。</div>
+    </section>
+
+    <section>
+      <h2>2. Gemini 模型路由參考</h2>
+      <p>這些模型名稱來自參考專案與本機文件；未來真正接 API 前，要再確認當下官方可用模型。v0.3 只把它放成「模型菜」裡的廚師選項，不直接啟動 API。</p>
+      <h3>教學型 Gemini 直接呼叫路線</h3>
+      <table>
+        <thead><tr><th>角色</th><th>模型</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>Main low-cost route</td><td><code>gemini-3.1-flash-lite</code></td><td>清楚 A4 圖片的第一版 JSON 草稿</td></tr>
+          <tr><td>Stronger review route</td><td><code>gemini-3.5-flash</code></td><td>小字、表格、手寫或結果衝突時的第二輪審查</td></tr>
+          <tr><td>Baseline comparison</td><td><code>gemini-2.5-flash</code></td><td>舊路線比較</td></tr>
+          <tr><td>Older lite baseline</td><td><code>gemini-2.5-flash-lite</code></td><td>歷史低成本比較</td></tr>
+        </tbody>
+      </table>
+      <h3>Pro01 / Pro02 Runtime 路線</h3>
+      <table>
+        <thead><tr><th>路由</th><th>AI1</th><th>AI2</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>預設雙模型</td><td><code>gemini-2.5-flash</code></td><td><code>gemini-3.1-flash-lite</code></td><td>一般比較 / 教學展示</td></tr>
+          <tr><td>強化雙模型</td><td><code>gemini-3.1-flash-lite</code></td><td><code>gemini-3.5-flash</code></td><td>較高精度或較難圖片</td></tr>
+        </tbody>
+      </table>
+      <p>Pro02 Runtime 也把 Gemini 視為 <code>google_gemini</code> adapter，Client 只需要知道 adapter、model、input normalization mode 與 runtime prompt。</p>
+    </section>
+
+    <section>
+      <h2>3. API 呼叫方式參考</h2>
+      <pre><code>POST https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent</code></pre>
+      <pre><code>{
+  "contents": [
+    {
+      "parts": [
+        {
+          "inline_data": {
+            "mime_type": "image/webp",
+            "data": "base64-image-without-prefix"
+          }
+        },
+        { "text": "OCR prompt text" }
+      ]
+    }
+  ],
+  "generationConfig": {
+    "responseMimeType": "application/json",
+    "temperature": 0
+  }
+}</code></pre>
+      <p>v0.3 保留 API key 欄位，但不主動送出，也不儲存 key。未來接 API 時，key 只能存在使用者瀏覽器或當次 job，不寫入公開原始碼、log、SQLite 或 JSON export。</p>
+    </section>
+
+    <section>
+      <h2>4. 影像處理策略參考</h2>
+      <p>影像準備和 prompt 一樣重要。教材上要讓學員理解，OCR 不是「越大越好」，而是要清楚、可讀、成本合理、可追蹤。</p>
+      <h3>教學版 WebP Preset</h3>
+      <pre><code>Input: local image file
+Preprocess: browser Canvas
+Output: WebP
+Max long side: 768 px
+Quality: 0.85
+Upscale: no</code></pre>
+      <table>
+        <thead><tr><th>Preset</th><th>格式</th><th>長邊</th><th>品質</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td>Trial</td><td>WebP</td><td>768</td><td>0.85</td><td>快速低成本試辨識</td></tr>
+          <tr><td>Balanced</td><td>WebP</td><td>1280</td><td>0.88</td><td>一般 A4 文件</td></tr>
+          <tr><td>Detail</td><td>WebP</td><td>1600</td><td>0.9</td><td>小字、表格、較密集版面</td></tr>
+          <tr><td>Archive evidence</td><td>Original</td><td>不變</td><td>不變</td><td>保留原始證據</td></tr>
+        </tbody>
+      </table>
+      <h3>Runtime Normalization Preset</h3>
+      <table>
+        <thead><tr><th>策略</th><th>格式</th><th>縮放規則</th><th>用途</th></tr></thead>
+        <tbody>
+          <tr><td><code>original</code></td><td>原檔</td><td>不轉檔</td><td>證據優先，保留來源</td></tr>
+          <tr><td><code>webp_ocr_768</code></td><td>WebP</td><td>長邊超過 768px 才縮小，quality 0.85</td><td>教學版低成本 Gemini OCR trial</td></tr>
+          <tr><td><code>jpg_compressed</code></td><td>JPEG</td><td>長邊超過 1400px 才縮小，quality 0.6</td><td>小檔、快速，可能傷文字邊緣</td></tr>
+          <tr><td><code>jpg_high</code></td><td>JPEG</td><td>長邊超過 2200px 才縮小，quality 0.9</td><td>照片型文件</td></tr>
+          <tr><td><code>png_standard</code></td><td>PNG</td><td>長邊約 1600-1800px</td><td>一般 OCR / AI vision 平衡點</td></tr>
+          <tr><td><code>png_high</code></td><td>PNG</td><td>長邊約 3000-3200px</td><td>小字、章戳、掃描件、難辨識文件</td></tr>
+        </tbody>
+      </table>
+      <div class="callout">關鍵原則：不要放大小圖。放大不會創造真實細節，只會增加傳輸與模型成本。</div>
+    </section>
+
+    <section>
+      <h2>5. Metadata 與資料保存邊界</h2>
+      <ul>
+        <li>API key 不寫入公開原始碼；v0.3 預留欄位不保存 key。</li>
+        <li>若未來教學 demo 暫存 key，必須有清楚的清除按鈕與儲存說明。</li>
+        <li>本地 DB、JSON export、Excel export 不保存原始圖片 bytes。</li>
+        <li>工作畫面可以顯示當前圖片，但持久化紀錄只保留 metadata 與分析結果。</li>
+      </ul>
+      <pre><code>{
+  "name": "",
+  "type": "",
+  "size": 0,
+  "size_kb": 0,
+  "width": 0,
+  "height": 0,
+  "strategy": "webp_ocr_768",
+  "strategy_label": "WebP 768 OCR",
+  "converted": true,
+  "resized": false,
+  "scale": 1,
+  "max_long_side": 768,
+  "quality": 0.85
+}</code></pre>
+    </section>
+
+    <section>
+      <h2>6. Multi-source Vision Runtime 觀念</h2>
+      <pre><code>OCR / Vision Source Adapter
+-> Prompt-based Extraction
+-> Structured JSON
+-> Normalization
+-> Audit Trail
+-> HITL
+-> ERP / Workflow ETL</code></pre>
+      <p><code>Gemini Vision</code>、<code>AI Browser</code>、<code>PaddleOCR</code>、<code>Human Input</code> 都可以是資料來源。Prompt Manager v0.3 不處理 runtime orchestration，但要先把 Prompt、Schema、Workflow 位置設計對。</p>
+    </section>
+
+    <section>
+      <h2>7. Prompt Manager v0.3 採用方式</h2>
+      <ol>
+        <li>OCR / Gemini 預留區文案註明 <code>AI_Teach_Classroom</code> 與 Pro01 參考策略。</li>
+        <li>OCR Prompt Pack 補一張「Gemini OCR 影像策略檢查」卡片。</li>
+        <li>文件記錄模型路由、影像策略、metadata 保存邊界。</li>
+        <li>JSON Connect 繼續作為主線，不強迫本系統直接呼叫 Gemini API。</li>
+      </ol>
+      <p>v0.3 不做完整圖片上傳與 Gemini API OCR、不做 AI1 / AI2 reconciliation table、不做圖像 base64 持久化。</p>
+    </section>
+
+    <section>
+      <h2>8. 教學說法</h2>
+      <div class="callout">OCR 是把紙本食材洗乾淨；影像策略是切菜大小；Gemini 模型是廚師；JSON Connect 是把成品裝成標準餐盒；人工審查是出餐前品管。</div>
+    </section>
+  </main>
+</body>
+</html>

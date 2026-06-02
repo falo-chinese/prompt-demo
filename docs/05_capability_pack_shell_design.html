@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FALO Runtime Capability Pack Blueprint</title>
+  <style>
+    :root {
+      --bg: #f7f8fb;
+      --paper: #ffffff;
+      --text: #172033;
+      --muted: #64748b;
+      --line: #dbe3ee;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --code: #0f172a;
+      --radius: 8px;
+      --shadow: 0 16px 42px rgba(15, 23, 42, 0.08);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+      line-height: 1.72;
+    }
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 32px 20px 72px;
+    }
+    header, section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 28px;
+      margin: 16px 0;
+    }
+    h1 { margin: 0; font-size: clamp(30px, 5vw, 46px); line-height: 1.15; letter-spacing: 0; }
+    h2 { margin: 0 0 12px; font-size: 24px; letter-spacing: 0; }
+    h3 { margin: 18px 0 8px; font-size: 18px; letter-spacing: 0; }
+    p { margin: 10px 0; }
+    .lead { color: var(--muted); font-size: 18px; max-width: 840px; }
+    .eyebrow { color: var(--accent); font-weight: 850; margin: 0 0 8px; }
+    .callout {
+      border-left: 4px solid var(--accent);
+      background: #f0fdfa;
+      padding: 12px 14px;
+      border-radius: 0 var(--radius) var(--radius) 0;
+      font-weight: 800;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 15px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th { background: #f8fafc; }
+    code {
+      background: #eef2f7;
+      padding: 2px 5px;
+      border-radius: 5px;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    }
+    pre {
+      overflow-x: auto;
+      background: var(--code);
+      color: #e2e8f0;
+      border-radius: var(--radius);
+      padding: 16px;
+      line-height: 1.55;
+    }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    a { color: var(--accent); font-weight: 800; }
+    @media (max-width: 760px) {
+      header, section { padding: 22px; }
+      table { font-size: 14px; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <p class="eyebrow">FALO Prompt Manager Design</p>
+      <h1>Capability Pack 藍圖</h1>
+      <p class="lead">Capability Pack 保留為 FALO Runtime 階段藍圖；FALO Prompt Manager v0.3 先專注 Prompt Asset Management。</p>
+    </header>
+
+    <section>
+      <h2>1. 核心句</h2>
+      <div class="callout">先把 Prompt 做成產品；Capability Pack 留在藍圖。</div>
+      <p>殼公開、卡分級、離線先匯入、線上接 GAS 是 Runtime 階段方向，不是 v0.3 主線。</p>
+    </section>
+
+    <section>
+      <h2>2. 三層架構</h2>
+      <pre><code>Public PWA Shell
+  ↓
+Offline Capability Pack JSON
+  ↓
+Future GAS Online Capability Pack</code></pre>
+      <p>這是未來 Runtime 架構：Shell 顯示功能槽位與鎖定狀態；離線 pack 啟用部分功能；GAS 線上 pack 回傳授權能力。v0.3 不實作。</p>
+    </section>
+
+    <section>
+      <h2>3. 功能槽位</h2>
+      <table>
+        <thead><tr><th>Slot</th><th>Capability</th><th>未啟用時顯示</th></tr></thead>
+        <tbody>
+          <tr><td>Prompt 管理</td><td><code>prompt.basic</code></td><td>需要 Basic Pack 或 FALO GAS 啟用</td></tr>
+          <tr><td>OCR 功能卡槽</td><td><code>ocr.postprocess</code></td><td>需要 OCR Pack 或 FALO GAS 啟用</td></tr>
+          <tr><td>Voice 功能卡槽</td><td><code>voice.dictation</code></td><td>需要 Voice Pack 或 FALO GAS 啟用</td></tr>
+          <tr><td>JSON Connect</td><td><code>json.connect</code></td><td>需要 Basic Pack 或 FALO GAS 啟用</td></tr>
+          <tr><td>Workflow / RFP</td><td><code>workflow.rfp</code></td><td>需要 RFP Pack 或 FALO GAS 啟用</td></tr>
+          <tr><td>GAS 功能包</td><td><code>gas.connect</code></td><td>預留，尚未連線</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section>
+      <h2>4. Pack Schema</h2>
+      <pre><code>{
+  "type": "faloCapabilityPack",
+  "packId": "falo.capability.basic",
+  "packName": "FALO Basic Prompt Pack",
+  "version": "0.1.0",
+  "provider": "FALO",
+  "licenseType": "teaching",
+  "enabledCapabilities": ["prompt.basic", "json.connect"],
+  "prompts": [],
+  "workflows": [],
+  "variables": {},
+  "uiPanels": [],
+  "inputMaterials": [],
+  "sampleData": {},
+  "expiresAt": null,
+  "signature": null,
+  "gasEndpoint": null
+}</code></pre>
+      <p>完整 JSON Schema 放在 <code>packages/shared-schema/capability-pack.schema.json</code>。</p>
+    </section>
+
+    <section>
+      <h2>5. 最小 UI 改版</h2>
+      <ul>
+        <li>Topbar 增加「匯入功能卡包」與 Pack 數量。</li>
+        <li>Sidebar 增加「功能卡槽」列表。</li>
+        <li>Main 未啟用功能顯示鎖定訊息。</li>
+        <li>Inspector 顯示已啟用 Pack 與 GAS 預留欄位。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>6. GAS 預留</h2>
+      <pre><code>PWA Shell
+  ↓
+輸入 GAS Endpoint / Account / Token
+  ↓
+FALO GAS Web App
+  ↓
+依帳號回傳 capability packs
+  ↓
+PWA Shell 啟用對應功能</code></pre>
+      <p>這是 FALO Runtime 階段的設計，不是 FALO Prompt Manager v0.3 的實作項目。目前不做登入、不送出帳密、不儲存 token。</p>
+    </section>
+
+    <section>
+      <h2>7. 目前下一步</h2>
+      <p>目前不建議為 Capability Pack 動 <code>index.html</code>。近期若要改介面，應優先強化 Prompt Card 欄位、Workflow Step、搜尋、標籤、狀態、變數代入與一鍵複製。</p>
+    </section>
+  </main>
+</body>
+</html>
