@@ -147,6 +147,7 @@ Capability Pack 先只保留在：
 - `docs/05_capability_pack_shell_design.md`：Runtime 階段的公開 Shell / Capability Pack 藍圖
 - `docs/06_product_strategy_alignment.md`：FALO Book / Prompt / Runtime 產品線對齊
 - `docs/08_v101_release_notes.md`：v1.01 版本備註、SEO / geo / hidden watermark 與發布檢查
+- `docs/09_voice_capture_mode_design.md`：語音插入模式、右側捕捉說明與教學說法
 - `packages/shared-schema/capability-pack.schema.json`：Capability Pack 預留 JSON Schema
 
 ## 專案原則

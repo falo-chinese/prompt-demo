@@ -888,6 +888,49 @@
       color: #fff;
     }
 
+    .button.voice-recording {
+      background: #7c3aed;
+      border-color: #7c3aed;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.16);
+    }
+
+    .voice-capture-box {
+      border: 1px solid rgba(79, 70, 229, 0.18);
+      border-radius: var(--radius);
+      background: rgba(99, 102, 241, 0.07);
+      padding: 10px;
+      margin-top: 10px;
+      display: grid;
+      gap: 7px;
+    }
+
+    .voice-capture-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: baseline;
+      font-size: 12px;
+    }
+
+    .voice-capture-label {
+      color: var(--muted);
+      font-weight: 850;
+    }
+
+    .voice-capture-value {
+      color: #4338ca;
+      font-weight: 900;
+      text-align: right;
+    }
+
+    .voice-capture-help {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
     .button.ocr-action {
       background: #d97706;
       border-color: #d97706;
@@ -1226,6 +1269,17 @@
             <button class="button subtle" id="clearVoiceButton" type="button">清空</button>
           </div>
           <div class="voice-status" id="voiceStatus">Web Speech API：待命。</div>
+          <div class="voice-capture-box" aria-label="語音捕捉狀態">
+            <div class="voice-capture-row">
+              <span class="voice-capture-label">目前模式</span>
+              <span class="voice-capture-value" id="voiceCaptureMode">全域 Voice_Text</span>
+            </div>
+            <div class="voice-capture-row">
+              <span class="voice-capture-label">寫入位置</span>
+              <span class="voice-capture-value" id="voiceCaptureTarget">[Voice_Text]</span>
+            </div>
+            <p class="voice-capture-help" id="voiceCaptureHelp">可按「開始聽寫」寫入 [Voice_Text]；編輯卡片時，先點文字框再按「語音插入」。</p>
+          </div>
         </section>
 
         <section class="panel pad tool-panel ocr-card">
@@ -1554,6 +1608,9 @@
       clearVoiceButton: document.getElementById("clearVoiceButton"),
       voiceTranscript: document.getElementById("voiceTranscript"),
       voiceStatus: document.getElementById("voiceStatus"),
+      voiceCaptureMode: document.getElementById("voiceCaptureMode"),
+      voiceCaptureTarget: document.getElementById("voiceCaptureTarget"),
+      voiceCaptureHelp: document.getElementById("voiceCaptureHelp"),
       openOcrWorkbenchButton: document.getElementById("openOcrWorkbenchButton"),
       pwaStatus: document.getElementById("pwaStatus"),
       conversionStatus: document.getElementById("conversionStatus"),
@@ -1889,6 +1946,38 @@
     function getActiveEditorTextInput() {
       if (activeEditorTextInput && !activeEditorTextInput.disabled) return activeEditorTextInput;
       return els.promptTextInput;
+    }
+
+    function getActiveEditorLabel() {
+      const input = getActiveEditorTextInput();
+      const inlineTitle = input.closest(".inline-editor")?.querySelector(".inline-editor-title")?.textContent;
+      const fieldLabel = input.previousElementSibling?.textContent;
+      return inlineTitle || fieldLabel || "目前游標所在欄位";
+    }
+
+    function setVoiceUiState(state, detail = "") {
+      const isRecording = state === "recording";
+      const isEditor = voiceMode === "editor";
+      const targetLabel = isEditor ? getActiveEditorLabel() : "[Voice_Text]";
+
+      els.voiceButton.classList.toggle("voice-recording", isRecording && !isEditor);
+      els.editorVoiceButton.classList.toggle("voice-recording", isRecording && isEditor);
+      document.querySelectorAll("[data-inline-voice-button]").forEach((button) => {
+        button.classList.toggle("voice-recording", isRecording && isEditor);
+        button.textContent = isRecording && isEditor ? "聽寫中" : "語音插入";
+      });
+
+      els.voiceCaptureMode.textContent = isEditor ? "編輯區語音插入" : "全域 Voice_Text";
+      els.voiceCaptureTarget.textContent = targetLabel;
+      if (isRecording) {
+        els.voiceCaptureHelp.textContent = isEditor
+          ? `正在聽寫，文字會插入「${targetLabel}」。說完請按「停止語音」結束。`
+          : "正在聽寫，文字會寫入 [Voice_Text]。說完請按「停止聽寫」。";
+      } else if (state === "error") {
+        els.voiceCaptureHelp.textContent = detail || "語音辨識發生錯誤，請檢查瀏覽器權限與麥克風。";
+      } else {
+        els.voiceCaptureHelp.textContent = "可按「開始聽寫」寫入 [Voice_Text]；編輯卡片時，先點文字框再按「語音插入」。";
+      }
     }
 
     function insertIntoActiveEditor(text) {
@@ -2532,6 +2621,7 @@
       });
       textarea.addEventListener("focus", () => {
         activeEditorTextInput = textarea;
+        if (!isListening) setVoiceUiState("ready");
       });
       return textarea;
     }
@@ -2687,6 +2777,7 @@
       voiceButton.type = "button";
       voiceButton.className = "button subtle";
       voiceButton.textContent = "語音插入";
+      voiceButton.dataset.inlineVoiceButton = "true";
       voiceButton.addEventListener("click", () => {
         activeEditorTextInput = textarea;
         toggleVoice("editor");
@@ -3470,6 +3561,7 @@
         els.editorVoiceStatus.textContent = "Web Speech API：此瀏覽器不支援。";
         els.editorVoiceButton.disabled = true;
         els.editorVoiceStopButton.disabled = true;
+        setVoiceUiState("error", "此瀏覽器不支援 Web Speech API。");
         return;
       }
 
@@ -3487,6 +3579,7 @@
           els.voiceButton.textContent = "停止聽寫";
           els.voiceStatus.textContent = "Web Speech API：聆聽中。";
         }
+        setVoiceUiState("recording");
       };
 
       recognition.onresult = (event) => {
@@ -3511,11 +3604,15 @@
         const statusText = interimText ? `辨識中：${interimText}` : "Web Speech API：聆聽中。";
         if (voiceMode === "editor") els.editorVoiceStatus.textContent = statusText;
         else els.voiceStatus.textContent = statusText;
+        if (interimText) {
+          els.voiceCaptureHelp.textContent = `辨識中：${interimText}`;
+        }
       };
 
       recognition.onerror = (event) => {
         els.voiceStatus.textContent = `Web Speech API：${event.error}`;
         els.editorVoiceStatus.textContent = `Web Speech API：${event.error}`;
+        setVoiceUiState("error", `Web Speech API：${event.error}`);
       };
 
       recognition.onend = () => {
@@ -3528,6 +3625,7 @@
         if (!els.editorVoiceStatus.textContent.includes("不支援")) {
           els.editorVoiceStatus.textContent = "語音會插入目前游標所在的編輯文字區塊。";
         }
+        setVoiceUiState("idle");
       };
     }
 
@@ -3538,6 +3636,7 @@
         return;
       }
       voiceMode = mode;
+      setVoiceUiState("ready");
       recognition.start();
     }
 
@@ -3619,6 +3718,7 @@
       input.addEventListener("focus", () => {
         activeEditorTextInput = input;
         els.editorVoiceStatus.textContent = `語音會插入「${input.previousElementSibling ? input.previousElementSibling.textContent : "目前欄位"}」。`;
+        if (!isListening) setVoiceUiState("ready");
       });
     });
     els.copyDraftPromptButton.addEventListener("click", () => {

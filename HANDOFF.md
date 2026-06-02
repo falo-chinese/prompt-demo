@@ -70,7 +70,8 @@
 6. `docs/06_product_strategy_alignment.md`
 7. `docs/05_capability_pack_shell_design.md`
 8. `docs/08_v101_release_notes.md`
-9. `packages/shared-schema/capability-pack.schema.json`
-10. `packages/local-html/index.html`
+9. `docs/09_voice_capture_mode_design.md`
+10. `packages/shared-schema/capability-pack.schema.json`
+11. `packages/local-html/index.html`
 
 再決定要接本地版、Chrome 外掛版，或 GAS 同步版。
