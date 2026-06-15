@@ -1084,7 +1084,7 @@
       <div class="topbar-inner">
         <div class="brand">
           <h1 class="brand-title">FALO Prompt Manager</h1>
-          <p class="brand-subtitle">模型菜 PWA：Prompt 題庫、OCR、Voice、JSON Connect</p>
+          <p class="brand-subtitle">模型菜主中心：Prompt 題庫、OCR、Voice、JSON Connect</p>
           <p class="release-line">v2.1 · Falo x Force Cheng · 2026/6/15</p>
         </div>
         <div class="topbar-actions">
@@ -1098,7 +1098,7 @@
           
           <!-- 其他動作 -->
           <button class="button" id="resetButton" type="button">🔄 還原範例</button>
-          <button class="button" id="installButton" type="button" disabled>📲 安裝成 PWA</button>
+          <button class="button" id="installButton" type="button" disabled>📲 安裝 Prompt 主中心</button>
           
           <!-- 風格選擇 -->
           <select class="select" id="themeSelect" aria-label="風格選擇">
@@ -1382,10 +1382,10 @@
         </section>
 
         <section class="panel pad">
-          <h2 class="panel-title">PWA 狀態</h2>
-          <p class="panel-note" id="pwaStatus">正在檢查 service worker。</p>
+          <h2 class="panel-title">主中心狀態</h2>
+          <p class="panel-note" id="pwaStatus">正在檢查應用程式環境。</p>
           <p class="panel-note">版本備註：v2.1 / Falo x Force Cheng / 2026/6/15。</p>
-          <p class="panel-note">完整 PWA 驗證請用 localhost 或 HTTPS；file:// 只能看靜態頁。</p>
+          <p class="panel-note">完整功能驗證請用 localhost 或 HTTPS；file:// 只能看靜態頁。</p>
         </section>
       </aside>
     </main>
@@ -3703,19 +3703,19 @@
         event.preventDefault();
         deferredInstallPrompt = event;
         els.installButton.disabled = false;
-        els.pwaStatus.textContent = "PWA 可安裝。";
+        els.pwaStatus.textContent = "應用程式可安裝。";
       });
 
       if ("serviceWorker" in navigator) {
         navigator.serviceWorker.register("./service-worker.js")
           .then(() => {
-            els.pwaStatus.textContent = "Service worker 已註冊，支援離線快取。";
+            els.pwaStatus.textContent = "主中心環境註冊成功，支援離線執行。";
           })
           .catch(() => {
-            els.pwaStatus.textContent = "Service worker 註冊失敗，請用 localhost 或 HTTPS 測試。";
+            els.pwaStatus.textContent = "環境註冊失敗，請用 localhost 或 HTTPS 測試。";
           });
       } else {
-        els.pwaStatus.textContent = "此瀏覽器不支援 service worker。";
+        els.pwaStatus.textContent = "此瀏覽器不支援離線執行。";
       }
     }
 

@@ -574,9 +574,10 @@ async function scanPwaTabs() {
     });
     if (matched) {
       try {
-        // Execute a quick script to check for FALO PWA metadata
+        // Execute a quick script to check for FALO PWA metadata in the MAIN world context
         const [res] = await chrome.scripting.executeScript({
           target: { tabId: tab.id },
+          world: 'MAIN',
           func: () => {
             return typeof window.__FALO_PWA_METADATA__ !== 'undefined' ? window.__FALO_PWA_METADATA__ : null;
           }
@@ -614,7 +615,7 @@ async function checkPwaTabStatus() {
   if (discoveredPwas.length === 0) {
     activePwaTabId = null;
     els.syncIndicator.className = "status-indicator disconnected";
-    els.syncStatusText.textContent = "未偵測到地端 PWA";
+    els.syncStatusText.textContent = "未偵測到 Prompt 主中心";
     els.syncStatusText.style.display = "inline";
     if (els.pwaTargetSelector) {
       els.pwaTargetSelector.style.display = "none";
@@ -685,11 +686,11 @@ async function checkPwaTabStatus() {
 async function pullFromPwa() {
   const tab = await findPwaTab();
   if (!tab) {
-    showToast("找不到地端 PWA 分頁，請先開啟地端網頁", "error");
+    showToast("找不到 Prompt 主中心分頁，請先開啟網頁", "error");
     return;
   }
 
-  showToast("正在拉取地端資料...");
+  showToast("正在拉取 Prompt 資料...");
   
   try {
     // Execute script in PWA tab context to get localStorage data
@@ -710,7 +711,7 @@ async function pullFromPwa() {
       const { database, variables } = results[0].result;
       
       if (!database) {
-        showToast("地端 PWA 尚未建立資料庫 (請先在地端初始化)", "error");
+        showToast("Prompt 主中心尚未建立資料庫 (請先在網頁端初始化)", "error");
         return;
       }
 
@@ -725,7 +726,7 @@ async function pullFromPwa() {
         }
         
         await saveState();
-        els.dbSourceText.textContent = "同步自地端網頁";
+        els.dbSourceText.textContent = "同步自 Prompt 主中心";
         renderUI();
         showToast("🔄 資料已成功拉取並同步！");
       } catch (err) {
@@ -741,11 +742,11 @@ async function pullFromPwa() {
 async function pushToPwa() {
   const tab = await findPwaTab();
   if (!tab) {
-    showToast("找不到地端 PWA 分頁，請先開啟地端網頁", "error");
+    showToast("找不到 Prompt 主中心分頁，請先開啟網頁", "error");
     return;
   }
 
-  showToast("正在推送外掛變更至地端...");
+  showToast("正在推送變更至 Prompt 主中心...");
 
   try {
     const dbStr = JSON.stringify(currentDb);
@@ -765,9 +766,9 @@ async function pushToPwa() {
       }
     }, (results) => {
       if (results && results[0] && results[0].result) {
-        showToast("📤 成功推送變更！地端網頁已重新整理。");
+        showToast("📤 成功推送變更！網頁已重新整理。");
       } else {
-        showToast("推送失敗，無法寫入地端", "error");
+        showToast("推送失敗，無法寫入網頁", "error");
       }
     });
   } catch (err) {
