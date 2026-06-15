@@ -146,11 +146,76 @@
 
     .topbar-actions {
       display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .topbar-row {
+      display: flex;
       align-items: center;
       justify-content: flex-end;
       flex-wrap: wrap;
       gap: 8px;
     }
+    .button.btn-csv {
+      border-color: #16a34a;
+      color: #15803d;
+      background: #f0fdf4;
+    }
+    .button.btn-csv:hover {
+      background: #dcfce7;
+      border-color: #15803d;
+    }
+    .button.primary.btn-csv {
+      background: #16a34a;
+      border-color: #16a34a;
+      color: #fff;
+    }
+    .button.primary.btn-csv:hover {
+      background: #15803d;
+      border-color: #15803d;
+    }
+    body[data-theme="dark"] .button.btn-csv {
+      border-color: #34d399;
+      color: #34d399;
+      background: rgba(52, 211, 153, 0.12);
+    }
+    body[data-theme="dark"] .button.btn-csv:hover {
+      background: rgba(52, 211, 153, 0.2);
+    }
+    body[data-theme="dark"] .button.primary.btn-csv {
+      background: #34d399;
+      border-color: #34d399;
+      color: #06211f;
+    }
+    body[data-theme="dark"] .button.primary.btn-csv:hover {
+      background: #059669;
+      border-color: #059669;
+    }
+    .button.btn-download {
+      border-color: #0284c7;
+      color: #0369a1;
+      background: #f0f9ff;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 750;
+      cursor: pointer;
+    }
+    .button.btn-download:hover {
+      background: #e0f2fe;
+      border-color: #0369a1;
+    }
+    body[data-theme="dark"] .button.btn-download {
+      border-color: #38bdf8;
+      color: #38bdf8;
+      background: rgba(56, 189, 248, 0.12);
+    }
+    body[data-theme="dark"] .button.btn-download:hover {
+      background: rgba(56, 189, 248, 0.2);
+    }
+
 
     .segmented-control {
       display: inline-flex;
@@ -1054,7 +1119,13 @@
       }
 
       .topbar-actions {
+        align-items: flex-start;
+        width: 100%;
+      }
+
+      .topbar-row {
         justify-content: flex-start;
+        width: 100%;
       }
 
       .workspace {
@@ -1126,35 +1197,43 @@
           <p class="release-line">v2.2 · Falo x Force Cheng · 2026/6/15</p>
         </div>
         <div class="topbar-actions">
-          <!-- 匯出群組 -->
-          <button class="button" id="exportCsvButton" type="button" style="border-color: #16a34a; color: #15803d; background: #f0fdf4;">📤 匯出 CSV</button>
-          <button class="button" id="exportButton" type="button">📤 匯出 JSON</button>
-          
-          <!-- 匯入群組 -->
-          <button class="button primary" id="importCsvButton" type="button" style="background: #16a34a; border-color: #16a34a; color: #fff;">📥 匯入 CSV</button>
-          <button class="button primary" id="importButton" type="button">📥 匯入 JSON</button>
-          
-          <!-- 其他動作 -->
-          <button class="button" id="resetButton" type="button">🔄 還原範例</button>
-          <button class="button" id="installButton" type="button" disabled>📲 安裝 Prompt 主中心</button>
-          
-          <!-- 模式切換 -->
-          <div class="segmented-control" id="uiModeSelector">
-            <button class="mode-btn" data-mode="compact" type="button">精簡模式</button>
-            <button class="mode-btn" data-mode="full" type="button">完整模式</button>
+          <div class="topbar-row">
+            <!-- 匯出群組 -->
+            <button class="button btn-csv" id="exportCsvButton" type="button">📤 匯出 CSV</button>
+            <button class="button" id="exportButton" type="button">📤 匯出 JSON</button>
+            
+            <!-- 匯入群組 -->
+            <button class="button primary btn-csv" id="importCsvButton" type="button">📥 匯入 CSV</button>
+            <button class="button primary" id="importButton" type="button">📥 匯入 JSON</button>
+            
+            <!-- 其他動作 -->
+            <button class="button" id="resetButton" type="button">🔄 還原範例</button>
+            
+            <!-- 衛星外掛狀態徽章 -->
+            <div class="extension-status-badge" id="extStatusBadge" title="等待外掛偵測...">
+              <span class="badge-dot"></span>
+              <span class="badge-text">🛰️ 衛星外掛：未連線</span>
+            </div>
           </div>
           
-          <!-- 風格選擇 -->
-          <select class="select" id="themeSelect" aria-label="風格選擇">
-            <option value="light">風格選擇：Light</option>
-            <option value="dark">風格選擇：Dark</option>
-            <option value="warm">風格選擇：Warm</option>
-          </select>
-          
-          <!-- 衛星外掛狀態徽章 -->
-          <div class="extension-status-badge" id="extStatusBadge" title="等待外掛偵測...">
-            <span class="badge-dot"></span>
-            <span class="badge-text">🛰️ 衛星外掛：未連線</span>
+          <div class="topbar-row">
+            <!-- Chrome 外掛下載 -->
+            <a class="button btn-download" id="downloadExtensionLink" href="./falo_prompt_satellite_v2.2.zip" download>📦 Chrome 衛星外掛資源包 (v2.2)</a>
+            
+            <button class="button" id="installButton" type="button" disabled>📲 安裝 Prompt 主中心</button>
+            
+            <!-- 模式切換 -->
+            <div class="segmented-control" id="uiModeSelector">
+              <button class="mode-btn" data-mode="compact" type="button">精簡模式</button>
+              <button class="mode-btn" data-mode="full" type="button">完整模式</button>
+            </div>
+            
+            <!-- 風格選擇 -->
+            <select class="select" id="themeSelect" aria-label="風格選擇">
+              <option value="light">風格選擇：Light</option>
+              <option value="dark">風格選擇：Dark</option>
+              <option value="warm">風格選擇：Warm</option>
+            </select>
           </div>
           
           <!-- 隱藏的檔案輸入框 -->

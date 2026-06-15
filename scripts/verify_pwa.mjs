@@ -53,7 +53,9 @@ for (const appDir of appDirs) {
     "https://falo-taiwan.github.io/ai-ocr-demo/",
     "Gemini OCR 影像策略檢查",
     "navigator.serviceWorker",
-    "beforeinstallprompt"
+    "beforeinstallprompt",
+    "downloadExtensionLink",
+    "falo_prompt_satellite_v2.2.zip"
   ]) {
     assertIncludes(index, token, `${label}/index.html`);
   }
