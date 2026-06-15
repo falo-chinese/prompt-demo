@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "FALO Prompt Manager",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "FALO Prompt 主中心的衛星側邊欄工具，支援自動填入 AI 對話框與地端資料同步。",
   "permissions": [
     "storage",

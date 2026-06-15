@@ -4,21 +4,21 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#0f766e">
-  <meta name="description" content="FALO Prompt Manager v2.1 is a local-first PWA for prompt asset management, model-dish teaching, variables, workflow prompt cards, OCR entry, voice input, and JSON Connect.">
+  <meta name="description" content="FALO Prompt Manager v2.2 is a local-first PWA for prompt asset management, model-dish teaching, variables, workflow prompt cards, OCR entry, voice input, and JSON Connect.">
   <meta name="author" content="Falo x Force Cheng">
   <meta name="keywords" content="FALO Prompt Manager, Prompt Asset Management, Prompt Card, AI Workflow, model dish, Falo x Force Cheng, OCR, Voice, JSON Connect, PWA, Taiwan">
-  <meta name="version" content="v2.1">
+  <meta name="version" content="v2.2">
   <meta name="release-date" content="2026-06-15">
   <meta name="geo.region" content="TW">
   <meta name="geo.placename" content="Taiwan">
   <meta name="geo.position" content="23.6978;120.9605">
   <meta name="ICBM" content="23.6978, 120.9605">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="FALO Prompt Manager v2.1">
+  <meta property="og:title" content="FALO Prompt Manager v2.2">
   <meta property="og:description" content="Falo x Force Cheng local-first PWA for prompt asset management and AI workflow teaching.">
   <meta property="og:locale" content="zh_TW">
   <meta name="twitter:card" content="summary">
-  <title>FALO Prompt Manager v2.1</title>
+  <title>FALO Prompt Manager v2.2</title>
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="icon" href="./icon.svg" type="image/svg+xml">
   <script src="./xlsx.full.min.js"></script>
@@ -150,6 +150,44 @@
       justify-content: flex-end;
       flex-wrap: wrap;
       gap: 8px;
+    }
+
+    .segmented-control {
+      display: inline-flex;
+      background: rgba(120, 120, 120, 0.08);
+      border-radius: 8px;
+      padding: 2px;
+      border: 1px solid var(--line);
+    }
+    .segmented-control .mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      padding: 4px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .segmented-control .mode-btn.active {
+      background: var(--panel);
+      color: var(--accent);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    body[data-theme="dark"] .segmented-control .mode-btn.active {
+      background: var(--panel-soft);
+      color: var(--accent);
+    }
+
+    /* PWA Prompt Area Compact Mode Styles */
+    body.mode-compact .prompt-card .description,
+    body.mode-compact .prompt-card .tags,
+    body.mode-compact .prompt-card .details-grid,
+    body.mode-compact .prompt-card .meta.target-ai,
+    body.mode-compact .prompt-card .meta.version,
+    body.mode-compact .field.admin-only {
+      display: none !important;
     }
 
     .button,
@@ -1078,14 +1116,14 @@
   </style>
 </head>
 <body data-theme="light">
-  <!-- FALO Prompt Manager release marker: v2.1 / Falo x Force Cheng / 2026/6/15 -->
+  <!-- FALO Prompt Manager release marker: v2.2 / Falo x Force Cheng / 2026/6/15 -->
   <div class="app-shell">
     <header class="topbar">
       <div class="topbar-inner">
         <div class="brand">
           <h1 class="brand-title">FALO Prompt Manager</h1>
           <p class="brand-subtitle">模型菜主中心：Prompt 題庫、OCR、Voice、JSON Connect</p>
-          <p class="release-line">v2.1 · Falo x Force Cheng · 2026/6/15</p>
+          <p class="release-line">v2.2 · Falo x Force Cheng · 2026/6/15</p>
         </div>
         <div class="topbar-actions">
           <!-- 匯出群組 -->
@@ -1099,6 +1137,12 @@
           <!-- 其他動作 -->
           <button class="button" id="resetButton" type="button">🔄 還原範例</button>
           <button class="button" id="installButton" type="button" disabled>📲 安裝 Prompt 主中心</button>
+          
+          <!-- 模式切換 -->
+          <div class="segmented-control" id="uiModeSelector">
+            <button class="mode-btn" data-mode="compact" type="button">精簡模式</button>
+            <button class="mode-btn" data-mode="full" type="button">完整模式</button>
+          </div>
           
           <!-- 風格選擇 -->
           <select class="select" id="themeSelect" aria-label="風格選擇">
@@ -1222,7 +1266,7 @@
                     <label for="promptTitleInput">標題</label>
                     <input id="promptTitleInput" type="text" placeholder="Prompt 卡片標題">
                   </div>
-                  <div class="field">
+                  <div class="field admin-only">
                     <label for="promptStatusInput">狀態</label>
                     <select id="promptStatusInput">
                       <option value="draft">草稿</option>
@@ -1231,7 +1275,7 @@
                       <option value="deprecated">停用</option>
                     </select>
                   </div>
-                  <div class="field wide">
+                  <div class="field wide admin-only">
                     <label for="promptDescriptionInput">用途說明</label>
                     <textarea id="promptDescriptionInput" data-editor-text="true" placeholder="這張卡什麼時候用？"></textarea>
                   </div>
@@ -1243,7 +1287,7 @@
                       <button class="button" id="insertVariableButton" type="button">插入變數</button>
                     </div>
                   </div>
-                  <div class="field wide">
+                  <div class="field wide admin-only">
                     <label for="promptTagsInput">標籤</label>
                     <input id="promptTagsInput" type="text" placeholder="用逗號分隔，例如：RFP, 教學, OCR">
                     <div class="insert-row">
@@ -1251,19 +1295,19 @@
                       <button class="button" id="addTagButton" type="button">加入標籤</button>
                     </div>
                   </div>
-                  <div class="field wide">
+                  <div class="field wide admin-only">
                     <label for="promptExpectedInput">預期輸出</label>
                     <textarea id="promptExpectedInput" data-editor-text="true" placeholder="希望 AI 回傳什麼格式或內容？"></textarea>
                   </div>
-                  <div class="field wide">
+                  <div class="field wide admin-only">
                     <label for="promptReviewInput">人工檢查點</label>
                     <textarea id="promptReviewInput" data-editor-text="true" placeholder="一行一個檢查點"></textarea>
                   </div>
-                  <div class="field">
+                  <div class="field admin-only">
                     <label for="promptTargetAIInput">目標 AI</label>
                     <input id="promptTargetAIInput" type="text" placeholder="例如：ChatGPT / Gemini">
                   </div>
-                  <div class="field">
+                  <div class="field admin-only">
                     <label for="promptVersionInput">版本</label>
                     <input id="promptVersionInput" type="text" placeholder="例如：0.3">
                   </div>
@@ -1399,7 +1443,7 @@
 
   <script>
     const APP_RELEASE = Object.freeze({
-      version: "v2.1",
+      version: "v2.2",
       brand: "Falo x Force Cheng",
       releaseDate: "2026/6/15",
       geo: "Taiwan",
@@ -1411,7 +1455,8 @@
       database: "falo_prompt_manager_database_v03",
       variables: "falo_prompt_manager_variables_v03",
       theme: "falo_prompt_manager_theme_v03",
-      source: "falo_prompt_manager_source_v03"
+      source: "falo_prompt_manager_source_v03",
+      mode: "falo_prompt_manager_mode_v03"
     };
 
     const DEFAULT_DATABASE = [
@@ -1624,6 +1669,7 @@
     let voiceMode = "global";
     let activeEditorTextInput = null;
     let sourceName = localStorage.getItem(STORAGE_KEYS.source) || "內建模型菜題庫";
+    let currentMode = localStorage.getItem(STORAGE_KEYS.mode) || "compact";
 
     const els = {
       categoryList: document.getElementById("categoryList"),
@@ -1646,6 +1692,7 @@
       resetButton: document.getElementById("resetButton"),
       installButton: document.getElementById("installButton"),
       themeSelect: document.getElementById("themeSelect"),
+      uiModeSelector: document.getElementById("uiModeSelector"),
       dropZone: document.getElementById("dropZone"),
       sourceName: document.getElementById("sourceName"),
       toast: document.getElementById("toast"),
@@ -2722,22 +2769,27 @@
       const grid = document.createElement("div");
       grid.className = "inline-editor-grid";
       const descriptionEditor = createTextBlockEditor("用途說明編輯", displayPrompt.description, "description", (value) => updatePromptDraftField("description", value), 72, "此卡尚未填寫用途說明。");
-      descriptionEditor.classList.add("wide");
-      grid.append(
-        inlineField("標題", inlineInput(displayPrompt.title, (value) => updatePromptDraftField("title", value))),
-        inlineField("狀態", inlineSelect(displayPrompt.status, [
-          { value: "draft", label: "草稿" },
-          { value: "review", label: "待審" },
-          { value: "stable", label: "穩定版" },
-          { value: "deprecated", label: "停用" }
-        ], (value) => updatePromptDraftField("status", value))),
-        descriptionEditor,
-        inlineField("目標 AI", inlineInput(displayPrompt.targetAI, (value) => updatePromptDraftField("targetAI", value))),
-        inlineField("版本", inlineInput(displayPrompt.version, (value) => updatePromptDraftField("version", value)))
-      );
+      descriptionEditor.classList.add("wide", "admin-only");
+
+      const titleField = inlineField("標題", inlineInput(displayPrompt.title, (value) => updatePromptDraftField("title", value)));
+      const statusField = inlineField("狀態", inlineSelect(displayPrompt.status, [
+        { value: "draft", label: "草稿" },
+        { value: "review", label: "待審" },
+        { value: "stable", label: "穩定版" },
+        { value: "deprecated", label: "停用" }
+      ], (value) => updatePromptDraftField("status", value)));
+      statusField.classList.add("admin-only");
+
+      const targetAIField = inlineField("目標 AI", inlineInput(displayPrompt.targetAI, (value) => updatePromptDraftField("targetAI", value)));
+      targetAIField.classList.add("admin-only");
+
+      const versionField = inlineField("版本", inlineInput(displayPrompt.version, (value) => updatePromptDraftField("version", value)));
+      versionField.classList.add("admin-only");
+
+      grid.append(titleField, statusField, descriptionEditor, targetAIField, versionField);
 
       const tagEditor = document.createElement("div");
-      tagEditor.className = "field wide";
+      tagEditor.className = "field wide admin-only";
       const tagLabel = document.createElement("label");
       tagLabel.textContent = "本卡標籤";
       const tagRow = document.createElement("div");
@@ -2913,10 +2965,10 @@
         if (categoryTitle) metaRow.append(pill(categoryTitle, "meta"));
       }
       for (const label of displayPrompt.variables.map((variable) => `[${variable}]`)) {
-        metaRow.append(pill(label, "meta"));
+        metaRow.append(pill(label, "meta variable"));
       }
-      if (displayPrompt.targetAI) metaRow.append(pill(displayPrompt.targetAI, "meta"));
-      if (displayPrompt.version) metaRow.append(pill(`v${displayPrompt.version}`, "meta"));
+      if (displayPrompt.targetAI) metaRow.append(pill(displayPrompt.targetAI, "meta target-ai"));
+      if (displayPrompt.version) metaRow.append(pill(`v${displayPrompt.version}`, "meta version"));
       if (metaRow.childElementCount) header.append(metaRow);
 
       if (displayPrompt.tags.length) {
@@ -3711,6 +3763,24 @@
       localStorage.setItem(STORAGE_KEYS.theme, nextTheme);
     }
 
+    function updateModeClass() {
+      if (currentMode === "compact") {
+        document.body.classList.add("mode-compact");
+        document.body.classList.remove("mode-full");
+      } else {
+        document.body.classList.add("mode-full");
+        document.body.classList.remove("mode-compact");
+      }
+      const buttons = els.uiModeSelector.querySelectorAll(".mode-btn");
+      buttons.forEach(btn => {
+        if (btn.dataset.mode === currentMode) {
+          btn.classList.add("active");
+        } else {
+          btn.classList.remove("active");
+        }
+      });
+    }
+
     function setupVoiceRecognition() {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       if (!SpeechRecognition) {
@@ -3915,6 +3985,17 @@
 
     els.themeSelect.addEventListener("change", () => setTheme(els.themeSelect.value));
 
+    els.uiModeSelector.addEventListener("click", (e) => {
+      const btn = e.target.closest(".mode-btn");
+      if (!btn) return;
+      const nextMode = btn.dataset.mode;
+      if (nextMode && nextMode !== currentMode) {
+        currentMode = nextMode;
+        localStorage.setItem(STORAGE_KEYS.mode, currentMode);
+        updateModeClass();
+      }
+    });
+
     els.searchInput.addEventListener("input", renderCards);
     els.promptSearchScopeCategory.addEventListener("click", () => setPromptSearchScope("category"));
     els.promptSearchScopeAll.addEventListener("click", () => setPromptSearchScope("all"));
@@ -4033,6 +4114,7 @@
     });
 
     setTheme(localStorage.getItem(STORAGE_KEYS.theme) || "light");
+    updateModeClass();
     els.sourceName.textContent = sourceName;
     syncSpecialInputsFromVariables(false);
     setupVoiceRecognition();
